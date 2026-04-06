@@ -120,8 +120,16 @@ if st.button("Analisar"):
     for ativo in lista:
         try:
             ticker = yf.Ticker(ativo)
-            info = ticker.info
-            df = yf.download(ativo, period="6mo")
+            try:
+                info = ticker.info
+            except Exception as e:
+                st.warning(f"{ativo}: erro ao buscar fundamentos (limite da API)")
+                info = {}
+            try:
+                df = yf.download(ativo, period="6mo")
+            except:
+                 st.error(f"Erro ao baixar dados de {ativo}")
+                 continue
             
             if df.empty:
                 st.write(f"{ativo} sem dados disponíveis")
