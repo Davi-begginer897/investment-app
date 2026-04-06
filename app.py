@@ -192,7 +192,7 @@ if botao:
                 st.subheader(f"📈 {ativo}")
                 df["SMA50"] = df["Close"].rolling(50).mean()
                 st.line_chart(df[["Close", "SMA50"]])
-            except Exception as e:
+        except Exception as e:
                 st.write(f"Erro ao analisar {ativo}")
                 st.write(e)
 
