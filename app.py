@@ -4,10 +4,46 @@ import pandas as pd
 import numpy as np
 import requests
 
-st.set_page_config(page_title="Sistema de Investimento", layout="wide")
+st.set_page_config(
+    page_title="Sistema de Investimentos",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-st.title("📊 Sistema Profissional de Investimento")
+# CSS para deixar bonito
+st.markdown("""
+<style>
+body {
+    background-color: #0e1117;
+    color: white;
+}
 
+.metric-box {
+    background-color: #1c1f26;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.sidebar.title("📊 Sistema de Investimentos")
+
+ativos = st.sidebar.text_input(
+    "Digite os ativos",
+    "PETR4.SA, VALE3.SA"
+)
+
+periodo = st.sidebar.selectbox(
+    "Período",
+    ["3mo", "6mo", "1y"]
+)
+
+botao = st.sidebar.button("🚀 Analisar")
+
+st.title("📊 Dashboard de Investimentos")
+st.caption("Análise completa com dados técnicos + fundamentalistas + macro")
 ativos = st.text_input("Digite os ativos (ex: PETR4.SA, VALE3.SA, ITUB4.SA)")
 
 # =========================
@@ -99,7 +135,7 @@ def otimizar_portfolio(returns_dict):
 # =========================
 # EXECUÇÃO
 # =========================
-if st.button("Analisar"):
+if botao:
 
     lista = [a.strip() for a in ativos.split(",")]
 
@@ -155,8 +191,8 @@ if st.button("Analisar"):
 
             with col2:
                 st.subheader(f"📈 {ativo}")
-                st.line_chart(df["Close"])
-
+            df["SMA50"] = df["Close"].rolling(50).mean()
+            st.line_chart(df[["Close", "SMA50"]])
         except Exception as e:
             st.write(f"Erro ao analisar {ativo}")
             st.write(e)
@@ -173,6 +209,18 @@ if st.button("Analisar"):
         st.stop()
 
     st.subheader("📊 Resultado da Análise")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+          st.metric("Ativos analisados", len(df_result))
+
+    with col2:
+          st.metric("Melhor Score", df_result["Score"].max())
+
+    with col3:
+          st.metric("Média Score", round(df_result["Score"].mean(), 2))
+
     st.dataframe(df_result)
 
     # DOWNLOAD
