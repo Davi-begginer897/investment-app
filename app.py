@@ -44,7 +44,6 @@ botao = st.sidebar.button("🚀 Analisar")
 
 st.title("📊 Dashboard de Investimentos")
 st.caption("Análise completa com dados técnicos + fundamentalistas + macro")
-ativos = st.text_input("Digite os ativos (ex: PETR4.SA, VALE3.SA, ITUB4.SA)")
 
 # =========================
 # MACRO
@@ -162,7 +161,7 @@ if botao:
                 st.warning(f"{ativo}: erro ao buscar fundamentos (limite da API)")
                 info = {}
             try:
-                df = yf.download(ativo, period="6mo")
+                df = yf.download(ativo, period=periodo)
             except:
                  st.error(f"Erro ao baixar dados de {ativo}")
                  continue
@@ -191,19 +190,17 @@ if botao:
 
             with col2:
                 st.subheader(f"📈 {ativo}")
-            df["SMA50"] = df["Close"].rolling(50).mean()
-            st.line_chart(df[["Close", "SMA50"]])
-        except Exception as e:
-            st.write(f"Erro ao analisar {ativo}")
-            st.write(e)
+                df["SMA50"] = df["Close"].rolling(50).mean()
+                st.line_chart(df[["Close", "SMA50"]])
+            except Exception as e:
+                st.write(f"Erro ao analisar {ativo}")
+                st.write(e)
 
     df_result = pd.DataFrame(resultados)
 
     if not df_result.empty and "Score" in df_result.columns:
         df_result = df_result.sort_values(by="Score", ascending=False)
 
-        st.subheader("📊 Resultado da Análise")
-        st.dataframe(df_result)
     else:
         st.error("Nenhum ativo foi analisado corretamente. Verifique os códigos digitados.")
         st.stop()
@@ -242,4 +239,4 @@ if botao:
         st.subheader("💼 Carteira Sugerida")
 
         for ativo, peso in pesos.items():
-            st.write(f"{ativo}: {peso:.2%}")
+            st.success(f"{ativo}: {peso:.2%}")
